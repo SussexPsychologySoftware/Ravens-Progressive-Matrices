@@ -1,0 +1,19 @@
+#stim{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#pattern{
+    padding-bottom: 30px;
+}
+
+#targetsGrid{
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+}
+
+#targetsGrid > img:hover {
+    opacity: 50%;
+}
