@@ -38,7 +38,7 @@ async function runNextTrial(){
         return
     }
     const stimId = stimIds[trialN]
-    const imageStub = 'https://raw.githubusercontent.com/nivlab/jspsych-demos/main/tasks/rpm/img/'  + stimId //'img/' + stimId 
+    const imageStub = 'https://raw.githubusercontent.com/nivlab/jspsych-demos/main/tasks/rpm/img/'  + stimId
     document.getElementById('pattern').src = imageStub + '.png'
     const targets = document.getElementById('targetsGrid').children
     for(let i=0; i<targets.length; i++){
