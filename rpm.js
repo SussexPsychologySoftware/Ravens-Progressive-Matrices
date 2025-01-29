@@ -1,58 +1,61 @@
-const stimIds = ['a11','a24','a28','a36','a43','a48','a49','a53','a55','b10','b16','b21','b30','b34','b44','b50','b52','b57']
-let data = []
-let trialN = 0;
-
-function shuffle(array) {
-    let currentIndex = array.length;
-    while (currentIndex != 0) {
-      let randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+const jsPsych = initJsPsych({
+    on_finish: function() {
+      jsPsych.data.displayData();
     }
-}
+});
 
-function preloadImages(){
-    for(let p=0; p<stimIds.length; p++){
-        const imageStub = 'https://raw.githubusercontent.com/nivlab/jspsych-demos/main/tasks/rpm/img/'  + stimIds[p]+'.png'
-        new Image().src = imageStub;
-        for(let t=0; t<=8; t++){
-            new Image().src = imageStub+ '_' + (t+1) + '.png'
+function constructTimelineVariables(){
+    const stim = [
+        {id:'a11', n:6},
+        {id:'a24', n:6},
+        {id:'a28', n:8},
+        {id:'a36', n:8},
+        {id:'a43', n:8},
+        {id:'a48', n:8},
+        {id:'a49', n:8},
+        {id:'a53', n:8},
+        {id:'a55', n:8},
+        {id:'b10', n:6},
+        {id:'b16', n:6},
+        {id:'b21', n:6},
+        {id:'b30', n:8},
+        {id:'b34', n:8},
+        {id:'b44', n:8},
+        {id:'b50', n:8},
+        {id:'b52', n:8},
+        {id:'b57', n:8}
+    ]
+    // turn into object expected by js
+    const urlStub = 'https://raw.githubusercontent.com/nivlab/jspsych-demos/main/tasks/rpm/img/'
+    let timelineVars = []
+    for (let t=0; t<stim.length; t++){
+        const trialUrlStub = urlStub + stim[t].id
+        const patternElement = `<img src=${trialUrlStub}.png></img>`
+        const trialVars = {pattern: patternElement, choices: []}
+        for (let s=1; s<=stim[t].n; s++){
+            trialVars.choices.push(`<img src=${trialUrlStub}_${s}.png></img>`)
         }
+        timelineVars.push(trialVars)
     }
+    return timelineVars
 }
 
-function attachListeners(){
-    function clickListener(e){
-        data.push({pattern: stimIds[trialN], selectedStim: e.target.id})
-        runNextTrial()
-    }
-    const targets = document.getElementById('targetsGrid').children
-    for(let i=0; i<targets.length; i++){
-        targets[i].addEventListener('click', clickListener)
-    }
+// Recommend also doing image preloading with jsPsychPreload
+const trial = {
+    type: jsPsychHtmlButtonResponse,
+    prompt: "<p>Which option completes the pattern?</p>",
+    stimulus: jsPsych.timelineVariable('pattern'),
+    choices: jsPsych.timelineVariable('choices'),
+    grid_columns: 3
+};
+
+const stimIds = constructTimelineVariables()
+const test_procedure = {
+    timeline: [trial],
+    timeline_variables: stimIds,
+    randomize_order: true
 }
 
-async function runNextTrial(){
-    if(trialN > stimIds.length-1) {
-        displayData()   
-        return
-    }
-    const stimId = stimIds[trialN]
-    const imageStub = 'https://raw.githubusercontent.com/nivlab/jspsych-demos/main/tasks/rpm/img/'  + stimId
-    document.getElementById('pattern').src = imageStub + '.png'
-    const targets = document.getElementById('targetsGrid').children
-    for(let i=0; i<targets.length; i++){
-        targets[i].src = imageStub + '_' + (i+1) + '.png'
-    }
-    trialN++
-}
-
-function displayData(){
-    document.getElementById('stim').hidden = true
-    document.getElementById('dataDisplay').innerText = JSON.stringify(data, null, "\t")
-}
-
-preloadImages()
-shuffle(stimIds)
-attachListeners()
-runNextTrial()
+const timeline = [];
+timeline.push(test_procedure);
+jsPsych.run(timeline);
