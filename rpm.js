@@ -46,7 +46,8 @@ const trial = {
     prompt: "<p>Which option completes the pattern?</p>",
     stimulus: jsPsych.timelineVariable('pattern'),
     choices: jsPsych.timelineVariable('choices'),
-    grid_columns: 3
+    grid_columns: 3,
+    button_html: (choice) => `<button class="jspsych-btn" style="border: none">${choice}</button>`
 };
 
 const stimIds = constructTimelineVariables()
