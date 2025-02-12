@@ -33,6 +33,8 @@ function constructTimelineVariables(){
         const patternElement = `<img src=${trialUrlStub}.png></img>`
         const trialVars = {pattern: patternElement, choices: []}
         for (let s=1; s<=stim[t].n; s++){
+            const preloadImage = new Image(100, 200);
+            preloadImage.src = `${trialUrlStub}_${s}.png`;
             trialVars.choices.push(`<img src=${trialUrlStub}_${s}.png></img>`)
         }
         timelineVars.push(trialVars)
