@@ -1,3 +1,5 @@
+//https://github.com/RealityBending/JSmisc/tree/main/tasks/RPM
+
 const jsPsych = initJsPsych({
     on_finish: function() {
       jsPsych.data.displayData();
@@ -43,13 +45,35 @@ function constructTimelineVariables(){
 }
 
 // Recommend also doing image preloading with jsPsychPreload
+// https://github.com/jspsych/jsPsych/discussions/1690
 const trial = {
     type: jsPsychHtmlButtonResponse,
-    prompt: "<p>Which option completes the pattern?</p>",
+    prompt: '<p>Which option completes the pattern?</p><span id="clock" style="color: red" hidden>00:30</span>',
     stimulus: jsPsych.timelineVariable('pattern'),
     choices: jsPsych.timelineVariable('choices'),
     grid_columns: 3,
-    button_html: (choice) => `<button class="jspsych-btn" style="border: none">${choice}</button>`
+    button_html: (choice) => `<button class="jspsych-btn" style="border: none">${choice}</button>`,
+    trial_duration: .5 * 60 * 1000,
+    on_load: function(){
+        var wait_time = .5 * 60 * 1000; // in milliseconds
+        var start_time = performance.now();
+        var interval = setInterval(function(){
+            //calc time left
+          var time_left = wait_time - (performance.now() - start_time);
+          var minutes = Math.floor(time_left / 1000 / 60);
+          var seconds = Math.floor((time_left - minutes*1000*60)/1000);
+          var seconds_str = seconds.toString().padStart(2,'0');
+          document.getElementById('clock').innerHTML = minutes + ':' + seconds_str
+          console.log(seconds)
+          if(seconds === 5){
+            document.getElementById('clock').hidden = false;
+          } else if(time_left <= 0){
+            document.getElementById('clock').innerHTML = "0:00"
+            clearInterval(interval);
+            document.getElementById('clock').hidden = true;
+          }
+        }, 250)
+      }
 };
 
 const stimIds = constructTimelineVariables()
